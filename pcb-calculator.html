@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Калькулятор травления плат</title>
+</head>
+<body bgcolor="white" text="black">
+
+<h1>Калькулятор раствора для травления плат</h1>
+
+<p>
+  Вес платы (г):
+  <input type="text" id="weight" size="8">
+  <input type="button" value="Рассчитать" onclick="calculate()">
+</p>
+
+<hr>
+
+<div id="result" style="display:none">
+  <h2>Минимальный точный вариант</h2>
+  <p>
+    Примерная площадь: <b id="area">—</b><br>
+    Масса меди: <b id="copper">—</b><br><br>
+    3% перекись водорода: <b id="peroxide">—</b><br>
+    Лимонная кислота: <b id="citric">—</b><br>
+    Поваренная соль: <b id="salt">—</b>
+  </p>
+
+  <p>
+    <small>
+      Допущения: односторонний гетинакс FR-1 толщиной 1.5 мм,
+      плотность подложки ≈1.35 г/см³, медь 35 мкм.<br>
+      Формула: 100 мл 3% H₂O₂ + 30 г лимонки + 5 г соли на 100 см² меди.<br>
+      Если плата двусторонняя — умножьте объём примерно ×2.
+    </small>
+  </p>
+</div>
+
+<script>
+  function calculate() {
+    var weight = parseFloat(document.getElementById('weight').value);
+    if (!weight || weight <= 0) {
+      alert('Введите положительный вес платы в граммах');
+      return;
+    }
+
+    var SUB_DENSITY = 1.35;
+    var SUB_THICKNESS = 0.15;
+    var COPPER_PER_CM2 = 8.96 * 0.0035;
+
+    var area = weight / (SUB_DENSITY * SUB_THICKNESS + COPPER_PER_CM2);
+    var copperMass = area * COPPER_PER_CM2;
+    var factor = area / 100;
+
+    var peroxide = 100 * factor;
+    var citric = 30 * factor;
+    var salt = 5 * factor;
+
+    document.getElementById('area').innerHTML = area.toFixed(1) + ' см²';
+    document.getElementById('copper').innerHTML = copperMass.toFixed(2) + ' г';
+    document.getElementById('peroxide').innerHTML = (peroxide < 10 ? peroxide.toFixed(1) : Math.round(peroxide)) + ' мл';
+    document.getElementById('citric').innerHTML = citric.toFixed(1) + ' г';
+    document.getElementById('salt').innerHTML = salt.toFixed(2) + ' г';
+
+    document.getElementById('result').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
